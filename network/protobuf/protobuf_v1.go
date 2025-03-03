@@ -30,11 +30,12 @@ type MsgInfoV1 struct {
 	msgRawHandler MsgHandler
 }
 
-func NewMsgIdProcessor() *Processor {
-	p := new(Processor)
-	p.littleEndian = false
-	p.msgID = make(map[reflect.Type]uint16)
-	return p
+func NewMsgIdProcessor() *ProcessorV1 {
+	return &ProcessorV1{
+		msgInfo: make(map[reflect.Type]*MsgInfoV1),
+		msgID:   make(map[reflect.Type]uint16),
+		typeID:  make(map[uint16]reflect.Type),
+	}
 }
 
 // It's dangerous to call the method on routing or marshaling (unmarshaling)
