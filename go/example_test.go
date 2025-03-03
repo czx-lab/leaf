@@ -2,8 +2,9 @@ package g_test
 
 import (
 	"fmt"
-	"github.com/name5566/leaf/go"
 	"time"
+
+	"github.com/czx-lab/leaf/go"
 )
 
 func Example() {

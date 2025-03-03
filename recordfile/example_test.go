@@ -2,7 +2,8 @@ package recordfile_test
 
 import (
 	"fmt"
-	"github.com/name5566/leaf/recordfile"
+
+	"github.com/czx-lab/leaf/recordfile"
 )
 
 func Example() {
@@ -62,6 +63,6 @@ func Example() {
 	// 6
 	// 4
 	// 6
-	// name5566
+	// czx-lab
 	// 6
 }

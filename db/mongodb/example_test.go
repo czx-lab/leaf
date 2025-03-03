@@ -2,7 +2,8 @@ package mongodb_test
 
 import (
 	"fmt"
-	"github.com/name5566/leaf/db/mongodb"
+
+	"github.com/czx-lab/leaf/db/mongodb"
 	"gopkg.in/mgo.v2"
 )
 

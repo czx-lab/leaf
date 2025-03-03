@@ -1,21 +1,6 @@
 Leaf
 ====
-A pragmatic game server framework in Go (golang).
-
-Features
----------
-
-* Extremely easy to use
-* Reliable
-* Multicore support
-* Modularity
-
-Community
----------
-
-
-
-Documentation
+游戏框架，原项目网址[@name5566](https://github.com/name5566/leaf)
 ---------
 
 * [中文文档](https://github.com/name5566/leaf/blob/master/TUTORIAL_ZH.md)
