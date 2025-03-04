@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math"
 	"reflect"
-	"sync"
 
 	"github.com/czx-lab/leaf/chanrpc"
 	"github.com/czx-lab/leaf/log"
@@ -14,8 +13,10 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// -------------------------
+// | id | protobuf message |
+// -------------------------
 type ProcessorV1 struct {
-	sync.RWMutex
 	littleEndian bool
 	msgInfo      map[reflect.Type]*MsgInfoV1
 	msgID        map[reflect.Type]uint16
@@ -82,9 +83,6 @@ func (p *ProcessorV1) Range(f func(id uint16, t reflect.Type)) {
 
 // Marshal implements network.Processor.
 func (p *ProcessorV1) Marshal(msg any) ([][]byte, error) {
-	p.RLock()
-	defer p.RUnlock()
-
 	msgType := reflect.TypeOf(msg)
 	i, ok := p.msgInfo[msgType]
 	if !ok {
@@ -134,7 +132,7 @@ func (p *ProcessorV1) Route(msg, userData any) error {
 }
 
 // Unmarshal implements network.Processor.
-func (p *ProcessorV1) Unmarshal(data []byte) (interface{}, error) {
+func (p *ProcessorV1) Unmarshal(data []byte) (any, error) {
 	if len(data) < 2 {
 		return nil, errors.New("protobuf data too short")
 	}
@@ -158,20 +156,14 @@ func (p *ProcessorV1) Unmarshal(data []byte) (interface{}, error) {
 		return MsgRaw{id, data[2:]}, nil
 	} else {
 		msg := reflect.New(i.msgType.Elem()).Interface()
-		return msg, proto.UnmarshalOptions{Merge: true}.Unmarshal(data[2:], msg.(proto.Message))
+		return msg, proto.Unmarshal(data[2:], msg.(proto.Message))
 	}
 }
 
 func (p *ProcessorV1) Register(msgID uint16, msg proto.Message) {
-	p.Lock()
-	defer p.Unlock()
-
 	msgType := reflect.TypeOf(msg)
 	if msgType == nil || msgType.Kind() != reflect.Ptr {
 		log.Fatal("protobuf: message must be a pointer")
-	}
-	if _, ok := p.typeID[msgID]; ok {
-		log.Fatal("protobuf: message ID %d is already registered", msgID)
 	}
 	if _, ok := p.msgInfo[msgType]; ok {
 		log.Fatal("protobuf: message %v is already registered", msgType)
@@ -180,10 +172,9 @@ func (p *ProcessorV1) Register(msgID uint16, msg proto.Message) {
 		log.Fatal("too many protobuf messages (max = %v)", math.MaxUint16)
 	}
 
-	i := new(MsgInfoV1)
-	i.msgType = msgType
-	i.msgID = msgID
-	p.msgInfo[msgType] = i
+	p.msgInfo[msgType] = &MsgInfoV1{
+		msgType: msgType, msgID: msgID,
+	}
 	p.msgID[msgType] = msgID
 	p.typeID[msgID] = msgType
 }

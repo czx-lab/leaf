@@ -3,7 +3,6 @@ module github.com/czx-lab/leaf
 go 1.24.0
 
 require (
-	github.com/golang/protobuf v1.5.4
 	google.golang.org/protobuf v1.36.5
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )
